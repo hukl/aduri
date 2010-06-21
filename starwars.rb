@@ -19,6 +19,6 @@ end
 Display.connect("127.0.0.1", 2342) do
   frames.each do |frame|
     update frame
-    sleep(0.1)
+    sleep(0.4)
   end
 end
