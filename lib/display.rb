@@ -36,8 +36,14 @@ class Display
     data = options.values.pack("SSSSSa1120")
 
     @udp_socket.send(data, 0, @ip, @port)
-    #response = @udp_socket.recvfrom(1130)
-    #puts response.join.unpack("SSSSSa1120")
+    response = @udp_socket.recvfrom(65536).first
+    response = response.unpack("SSSSSa1120")
+
+    if response.first == 0
+      "OK"
+    else
+      "ERROR"
+    end
   end
 
 end

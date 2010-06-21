@@ -16,6 +16,7 @@ end
 
 Display.connect("127.0.0.1", 2342) do
 
-  update text
+  response = update text
+  puts response
 
 end
