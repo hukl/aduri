@@ -6,19 +6,25 @@ frame  = []
 File.open(ARGV[0], "r") do |file|
   file.each_line do |line|
 
-    frame << line.ljust(100).gsub(/\n/, "")[8..63]
+    frame << line.ljust(100).gsub(/\n/, "")[7..62]
 
     if (file.lineno - 1) % 14 == 0
       frames << frame.join
       frame = []
     end
-    break if file.lineno == 15000
   end
 end
 
 Display.connect("127.0.0.1", 2342) do
+  @framerate = 0
   frames.each do |frame|
-    update frame
-    sleep(0.4)
+
+    start_time = Time.now
+    update (frame + @framerate.to_i.to_s.ljust(56))
+    
+    sleep(0.04)
+    end_time = Time.now
+    
+    @framerate = 1 / (end_time - start_time)
   end
 end
