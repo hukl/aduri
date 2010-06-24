@@ -13,7 +13,7 @@ class Display
 
   def self.connect ip, port, &block
     display = Display.new ip, port
-    
+
     begin
       display.instance_eval &block
     rescue => exception
@@ -23,7 +23,7 @@ class Display
     end
   end
 
-  def update text
+  def update text, custom_options = {}
     options = {
       :command     => 3,
       :xpos        => 0,
@@ -33,17 +33,24 @@ class Display
       :data        => text
     }
 
+    options.merge!( custom_options )
+
     data = options.values.pack("SSSSSa1120")
 
     @udp_socket.send(data, 0, @ip, @port)
-    response = @udp_socket.recvfrom(65536).first
-    response = response.unpack("SSSSSa1120")
 
-    if response.first == 0
-      "OK"
-    else
-      "ERROR"
-    end
+    get_blocking_udp_response
   end
 
+  private
+
+    def get_blocking_udp_response
+      if select([@udp_socket], nil, nil, 3)
+        response = @udp_socket.recvfrom(65536).first
+        response = response.unpack("SSSSSa1120")
+        response.first == 0 ? "OK" : "ERROR"
+      else
+        "The display is not responding"
+      end
+    end
 end
